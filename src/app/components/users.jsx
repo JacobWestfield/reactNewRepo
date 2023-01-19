@@ -29,8 +29,12 @@ const Users = ({ users: allUsers, ...rest }) => {
         setCurrentPage(pageIndex);
         console.log("page: ", pageIndex);
     };
+    /* У меня не работал фильтр с массивом. Долго не мог понять почему
+        А потом понял. У спикера на лекции было сравнение объектов. А объект профессии в professions не тот же самый объект что в professionsObject. Пришлось дополнить решение, уточнив айдишник профессии
+        В принципе есть решение: создать общий конфиг с объектами профессий и передать ссылки в обе коллекции, но я решил не усложнять и так громоздкое приложение
+    */
     const filteredUsers = selectedProf
-        ? allUsers.filter((user) => user.profession === selectedProf)
+        ? allUsers.filter((user) => user.profession._id === selectedProf._id)
         : allUsers;
     const count = filteredUsers.length;
     const usersCrop = paginate(filteredUsers, currentPage, pageSize);
