@@ -20,7 +20,7 @@ const fetchAll = () =>
     new Promise((resolve) => {
         setTimeout(function () {
             resolve(professions);
-        }, 2000);
+        }, 4000);
     });
 
 const api = {
