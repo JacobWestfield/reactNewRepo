@@ -29,22 +29,15 @@ const TableHeader = ({ onSort, selectedSort, columns }) => {
                     >
                         {columns[column].name}
 
-                        {
-                            /* пришлось добавить в начало eslint-disable, потому что
-                        он при каждой "компиляции" ругался на правило
-                        multiline-ternary. Поискал решение в документации к
-                        линтеру и ничего не обнаружил. Просьба помочь если
-                        получится */
-                            selectedSort.path === columns[column].path ? (
-                                <i
-                                    className={
-                                        selectedSort.order === "asc"
-                                            ? "bi bi-caret-down-fill"
-                                            : "bi bi-caret-up-fill"
-                                    }
-                                ></i>
-                            ) : undefined
-                        }
+                        {selectedSort.path === columns[column].path ? (
+                            <i
+                                className={
+                                    selectedSort.order === "asc"
+                                        ? "bi bi-caret-down-fill"
+                                        : "bi bi-caret-up-fill"
+                                }
+                            ></i>
+                        ) : undefined}
                     </th>
                 ))}
             </tr>

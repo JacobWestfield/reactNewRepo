@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { paginate } from "../utils/paginate";
-import Pagination from "./pagination";
-import GroupList from "./groupList";
-import api from "../api";
-import SearchStatus from "./searchStatus";
-import UsersTable from "./usersTable";
+import Pagination from "../components/pagination";
+import GroupList from "../components/groupList";
+import api from "../api/index";
+import SearchStatus from "../components/searchStatus";
+import UsersTable from "../components/usersTable";
 import _ from "lodash";
+import { useParams } from "react-router-dom";
+import RenderedUser from "../components/renderedUser";
 
 const Users = () => {
+    const { userId } = useParams();
     const [currentPage, setCurrentPage] = useState(1);
     const [professions, setProfessions] = useState();
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
+    const [tempUserId, setTempUserId] = useState();
     const pageSize = 4;
 
     useEffect(() => {
@@ -40,7 +44,6 @@ const Users = () => {
                 return user;
             })
         );
-        console.log(id);
     };
 
     const handleProfessionSelect = (item) => {
@@ -49,7 +52,6 @@ const Users = () => {
 
     const handlePageChange = (pageIndex) => {
         setCurrentPage(pageIndex);
-        console.log("page: ", pageIndex);
     };
 
     const handleSort = (item) => {
@@ -57,6 +59,18 @@ const Users = () => {
     };
 
     if (users) {
+        // Я тут немного тупо в лоб сделал логику с отрисовкой карточки пользователя. Если в параметрах роутера есть чтото то идет проверка есть ли такой айди юзера. Если есть то рисуется карточка пользователя, если нет то типо загрузка.
+        if (userId) {
+            api.users.getById(userId).then((data) => {
+                setTempUserId(data);
+            });
+            if (tempUserId) {
+                return <>{<RenderedUser data={users} userId={userId} />}</>;
+            } else {
+                return <h1>Loading...</h1>;
+            }
+        }
+
         const filteredUsers = selectedProf
             ? users.filter((user) => user.profession._id === selectedProf._id)
             : users;
