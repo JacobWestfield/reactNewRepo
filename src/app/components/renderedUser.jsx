@@ -10,7 +10,7 @@ const RenderedUser = ({ userId, data }) => {
             {userId ? (
                 <>
                     <h1>{user.name}</h1>
-                    <h2>{user.profession.name}</h2>
+                    <h2>Профессия:{user.profession.name}</h2>
                     {user.qualities.map((quality) => (
                         <span
                             key={quality._id}
@@ -19,8 +19,8 @@ const RenderedUser = ({ userId, data }) => {
                             {quality.name}
                         </span>
                     ))}
-                    <h4>{user.completedMeetings}</h4>
-                    <h2>{user.rate}</h2>
+                    <h4>Мероприятий:{user.completedMeetings}</h4>
+                    <h2>Рейтинг:{user.rate}</h2>
                     <button onClick={() => history.replace("/users")}>
                         All users
                     </button>
