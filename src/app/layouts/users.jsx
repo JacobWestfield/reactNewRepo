@@ -9,6 +9,7 @@ import UsersTable from "../components/usersTable";
 import _ from "lodash";
 import { useParams } from "react-router-dom";
 import RenderedUser from "../components/renderedUser";
+import SearchField from "../components/searchField";
 
 const Users = () => {
     const { userId } = useParams();
@@ -17,6 +18,9 @@ const Users = () => {
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
     const [tempUserId, setTempUserId] = useState();
+    const [searchData] = useState();
+    const [users, setUsers] = useState();
+
     const pageSize = 4;
 
     useEffect(() => {
@@ -26,8 +30,6 @@ const Users = () => {
     useEffect(() => {
         setCurrentPage(1);
     }, [selectedProf]);
-
-    const [users, setUsers] = useState();
 
     useEffect(() => {
         api.users.fetchAll().then((data) => setUsers(data));
@@ -59,7 +61,6 @@ const Users = () => {
     };
 
     if (users) {
-        // Я тут немного тупо в лоб сделал логику с отрисовкой карточки пользователя. Если в параметрах роутера есть чтото то идет проверка есть ли такой айди юзера. Если есть то рисуется карточка пользователя, если нет то типо загрузка.
         if (userId) {
             api.users.getById(userId).then((data) => {
                 setTempUserId(data);
@@ -76,16 +77,36 @@ const Users = () => {
             : users;
 
         const count = filteredUsers.length;
+
         const sortedUsers = _.orderBy(
             filteredUsers,
             [sortBy.path],
             [sortBy.order]
         );
-        const usersCrop = paginate(sortedUsers, currentPage, pageSize);
 
         const clearFilter = () => {
             setSelectedProf(undefined);
         };
+
+        function handleSearch(data) {
+            clearFilter();
+            data.trim();
+            if (data) {
+                const regExp = new RegExp(`\\${data}`, "g");
+                /* только частично сделано задание, не могу вернуть старый массив пользователей после изменения поиска
+                Не знаю почему, но компонент не перерендеривается ничем кроме как setUsers() хоть убей. А setUsers() затирает старый массив
+                Также не получилось сделать сброс поиска при выборе фильтра профессии, только наоборот сброс фильтра
+                */
+                setUsers(
+                    users.filter((user) =>
+                        regExp.test(user.name) ? user : undefined
+                    )
+                );
+            }
+        }
+
+        const usersCrop = paginate(sortedUsers, currentPage, pageSize);
+
         return (
             <div className="d-flex">
                 {professions && (
@@ -105,6 +126,10 @@ const Users = () => {
                 )}
                 <div className="d-flex flex-column">
                     <SearchStatus length={count} />
+                    <SearchField
+                        onSearch={handleSearch}
+                        searchData={searchData}
+                    />
                     {count > 0 && (
                         <UsersTable
                             onSort={handleSort}
